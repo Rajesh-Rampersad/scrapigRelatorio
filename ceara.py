@@ -4,17 +4,35 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
+import time
 
-# Inicializar o navegador Selenium
-# Initialize Selenium browser
-# Inicializar el navegador Selenium
-driver = webdriver.Chrome()
-driver.implicitly_wait(20)  # Estabelecer uma espera implícita de 20 segundos
-# Set implicit wait to 20 seconds
+# # Inicializar o navegador Selenium
+# # Initialize Selenium browser
+# # Inicializar el navegador Selenium
+# driver = webdriver.Chrome()
+# driver.implicitly_wait(10)  # Estabelecer uma espera implícita de 20 segundos
+# # Set implicit wait to 20 seconds
 
-# Obtener a URL atual do navegador Selenium
-# Get the current URL of the Selenium browser
-# Obtener la URL actual del navegador Selenium
+# # Obtener a URL atual do navegador Selenium
+# # Get the current URL of the Selenium browser
+# # Obtener la URL actual del navegador Selenium
+# driver.get("http://wapp.mpce.mp.br/DeconAntiMarketing/visao/con_Telefones.aspx")
+
+
+service = webdriver.ChromeService()
+options = webdriver.ChromeOptions()
+
+# Agregar las opciones para evitar el cuadro de diálogo de confirmación de descarga
+options.add_argument("--disable-infobars")
+options.add_argument("--disable-extensions")
+options.add_argument("--disable-gpu")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--no-sandbox")
+options.add_argument("--remote-debugging-port=9222")
+options.add_argument("--remote-debugging-address=0.0.0.0")
+options.add_argument("--incognito")
+
+driver = webdriver.Chrome(service=service, options=options)
 driver.get("http://wapp.mpce.mp.br/DeconAntiMarketing/visao/con_Telefones.aspx")
 
 try:
@@ -34,6 +52,7 @@ try:
     fecha_fin_input.clear()
     fecha_fin_input.send_keys(
         datetime.now().strftime("%d/%m/%Y"))  # Data atual
+
     # Hacer clic en el botão "Buscar"
     # Click the "Buscar" button
     # Hacer clic en el botón "Buscar"
@@ -43,24 +62,15 @@ try:
     # Esperar até que o link de download apareça
     # Wait until the download link appears
     # Esperar a que aparezca el enlace de descarga
-    wait = WebDriverWait(driver, 30)
-    download_link = wait.until(EC.presence_of_element_located(
-        (By.ID, 'ctl00_ContentPlaceHolder1_lbDown')))
+    wait = WebDriverWait(driver, 0.5)
+    download_link = wait.until(EC.visibility_of_element_located(
+        (By.ID, 'ContentPlaceHolder1_lbDown')))
+    download_link.click()
 
-    # Obter o URL de download e clicar nele
-    # Get the download URL and click on it
-    # Obtener el URL de descarga y hacer clic en él
-    download_url = download_link.get_attribute("href")
-    driver.get(download_url)
-    os.system(f"wget {download_link}")
+    print("Esperando que aparezca el cuadro de diálogo de descarga...")
 
-    # Obter o URL de download do link
-    # file_url = download_link.get_attribute("href")
-
-    # Baixar o arquivo
-    # Download the file
-    # Descargar el archivo
-    # os.system(f"wget {file_url}")
+    # Esperar 10 segundos para que aparezca el cuadro de diálogo de descarga
+    time.sleep(10)
 
     print("Arquivo baixado com sucesso")
     # Archivo descargado con éxito

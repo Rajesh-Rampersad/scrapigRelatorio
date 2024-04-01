@@ -4,19 +4,20 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
-service = webdriver.ChromeService()
+
+# Configurar las opciones de Chrome para evitar el cuadro de diálogo de confirmación de descarga
 options = webdriver.ChromeOptions()
+prefs = {
+    "download.default_directory": "/../Documents/webscraping",
+    "download.prompt_for_download": False,
+    "download.directory_upgrade": True,
+    "safebrowsing.enabled": False
 
-# Agregar las opciones para evitar el cuadro de diálogo de confirmación de descarga
-options.add_argument("--disable-infobars")
-options.add_argument("--disable-extensions")
-options.add_argument("--disable-gpu")
-options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--no-sandbox")
-options.add_argument("--remote-debugging-port=9222")
-options.add_argument("--remote-debugging-address=0.0.0.0")
+}
+options.add_experimental_option("prefs", prefs)
 
 
+service = webdriver.ChromeService()
 driver = webdriver.Chrome(service=service, options=options)
 driver.get("http://wapp.mpce.mp.br/DeconAntiMarketing/visao/con_Telefones.aspx")
 
